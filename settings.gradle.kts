@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "old_melnik_mobile"
+rootProject.name = "old-melnik-mobile"
 include(":app")
+ 

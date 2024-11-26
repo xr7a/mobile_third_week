@@ -1,40 +1,101 @@
 package ru.desyatov.old_melnik_mobile
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toolbar
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 
-class DetailActivity : AppCompatActivity() {
-    @SuppressLint("UseCompatLoadingForDrawables")
+@OptIn(ExperimentalMaterial3Api::class)
+class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_detail)
+        val title = intent.getStringExtra("title") ?: "No Title"
+        val subtitle = intent.getStringExtra("subtitle") ?: "No Subtitle"
+        val imageResId = intent.getStringExtra("imageResId") ?: "No image"
 
-        val toolbar: Toolbar = findViewById(R.id.detailToolbar)
-        toolbar.setNavigationIcon(R.drawable.arrow_back)
-        toolbar.setNavigationOnClickListener{
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+        setContent {
+            MaterialTheme {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("Old Melnik") },
+                            navigationIcon = {
+                                val context = LocalContext.current
+                                IconButton(
+                                    onClick = {
+                                        val intent = Intent(context, MainActivity::class.java)
+                                        startActivity(intent)
+                                    })
+                                {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Back"
+                                    )
+                                }
+                            }
+
+                        )
+                    },
+                    content = { paddingValues ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                        )
+                        {
+                            DetailScreen(
+                                title = title,
+                                subtitle = subtitle,
+                                imageResId = imageResId
+                            )
+                        }
+
+                    }
+                )
+            }
         }
-
-        val title = intent.getStringExtra("title")
-        val subtitle = intent.getStringExtra("subtitle")
-        val image = intent.getIntExtra("imageResId", 0)
-
-        val imageView: ImageView = findViewById(R.id.imageView2)
-        val titleTextView: TextView = findViewById(R.id.textView)
-        val subtitleTextView: TextView = findViewById(R.id.textView2)
-
-        imageView.setImageResource(image)
-        titleTextView.text = title
-        subtitleTextView.text = subtitle
+    }
+}
 
 
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun DetailScreen(title: String, subtitle: String, imageResId: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        GlideImage(
+            model = imageResId,
+            contentDescription = "Loaded Image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = title, fontSize = 24.sp, color = Color.Black)
+        Text(text = subtitle, fontSize = 18.sp, color = Color.Gray)
     }
 }
